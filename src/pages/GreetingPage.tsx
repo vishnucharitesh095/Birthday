@@ -55,8 +55,23 @@ const GreetingPage: React.FC = () => {
   
   // Lazy initializer function to load greeting from URL params or localStorage
   const loadGreetingFromURL = (): GreetingData => {
-    // First check URL search params for data
     const urlParams = new URLSearchParams(window.location.search);
+    
+    // First check for short ID in query params (new approach with localStorage)
+    const idParam = urlParams.get('id');
+    if (idParam) {
+      const stored = localStorage.getItem(`greeting_${idParam}`);
+      if (stored) {
+        try {
+          const parsed = JSON.parse(stored);
+          return { ...demoData, ...parsed };
+        } catch {
+          console.error('Failed to parse greeting data from localStorage');
+        }
+      }
+    }
+    
+    // Check URL search params for data (old approach with base64 in URL)
     const dataParam = urlParams.get('data');
     
     if (dataParam) {

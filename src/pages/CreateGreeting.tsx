@@ -95,11 +95,16 @@ const CreateGreeting: React.FC = () => {
   };
 
   const generateLink = () => {
-    // Encode greeting data in URL as base64 for shareable links
-    // This works without a backend - data is stored in the URL itself
-    const encodedData = btoa(encodeURIComponent(JSON.stringify(greetingData)));
+    // Generate a unique ID for the greeting
+    const greetingId = Date.now().toString(36) + Math.random().toString(36).substr(2);
+    
+    // Store greeting data in localStorage
+    localStorage.setItem(`greeting_${greetingId}`, JSON.stringify(greetingData));
+    
+    // Create a short URL with just the ID
     const baseUrl = window.location.origin;
-    const shareableLink = `${baseUrl}/wish?data=${encodedData}`;
+    const shareableLink = `${baseUrl}/wish?id=${greetingId}`;
+    
     setGeneratedLink(shareableLink);
     setStep('share');
   };
@@ -108,15 +113,38 @@ const CreateGreeting: React.FC = () => {
     setStep('preview');
   };
 
-  const copyLink = () => {
-    navigator.clipboard.writeText(generatedLink);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+  const copyLink = async () => {
+    try {
+      // Try modern clipboard API first
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(generatedLink);
+      } else {
+        // Fallback for older browsers or non-secure contexts
+        const textArea = document.createElement('textarea');
+        textArea.value = generatedLink;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-999999px';
+        textArea.style.top = '-999999px';
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+      }
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy:', err);
+      // Show alert as last resort
+      alert('Link copied! Here\'s your link: ' + generatedLink);
+    }
   };
 
   const shareToWhatsApp = () => {
     const text = `Check out this beautiful birthday wish for ${greetingData.birthdayName}! ${generatedLink}`;
-    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+    // Use WhatsApp Web format which works without phone number
+    const whatsappUrl = `https://web.whatsapp.com/send?text=${encodeURIComponent(text)}`;
+    window.open(whatsappUrl, '_blank');
   };
 
   const shareToEmail = () => {
