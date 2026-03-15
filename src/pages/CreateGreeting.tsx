@@ -18,6 +18,12 @@ import Card from '../components/ui/Card';
 
 type ThemeOption = 'elegant-gold' | 'pastel-cute' | 'balloon-party' | 'dark-luxury' | 'minimal-modern' | 'karthika';
 
+interface TimelineEvent {
+  year: string;
+  title: string;
+  description: string;
+}
+
 interface GreetingData {
   birthdayName: string;
   message: string;
@@ -26,6 +32,7 @@ interface GreetingData {
   backgroundImage: string;
   music: string;
   theme: ThemeOption;
+  timeline: TimelineEvent[];
 }
 
 const themes: { id: ThemeOption; name: string; colors: string }[] = [
@@ -48,12 +55,29 @@ const CreateGreeting: React.FC = () => {
     backgroundImage: '',
     music: '',
     theme: 'karthika',
+    timeline: [
+      { year: '2020', title: 'The Beginning', description: 'Where it all started' },
+      { year: '2021', title: 'New Adventures', description: 'New journeys begin' },
+      { year: '2022', title: 'Growing Stronger', description: 'Every day better than before' },
+      { year: '2023', title: 'Making Memories', description: 'Cherishing every moment' },
+      { year: '2024', title: 'New Horizons', description: 'Looking forward to tomorrow' },
+      { year: '2025', title: 'New Beginnings', description: 'A fresh start awaits' },
+      { year: '2026', title: 'Dreams Come True', description: 'Making wishes happen' },
+    ],
   });
   const [generatedLink, setGeneratedLink] = useState('');
   const [copied, setCopied] = useState(false);
 
   const handleInputChange = (field: keyof GreetingData, value: string) => {
     setGreetingData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleTimelineChange = (index: number, field: keyof TimelineEvent, value: string) => {
+    setGreetingData((prev) => {
+      const newTimeline = [...prev.timeline];
+      newTimeline[index] = { ...newTimeline[index], [field]: value };
+      return { ...prev, timeline: newTimeline };
+    });
   };
 
   const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -222,6 +246,51 @@ const CreateGreeting: React.FC = () => {
                       className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-elegant-gold focus:ring-2 focus:ring-elegant-gold/20 outline-none transition-all resize-none"
                     />
                   </div>
+                </div>
+              </Card>
+
+              <Card className="p-6">
+                <h2 className="text-xl font-semibold text-elegant-dark mb-4 flex items-center gap-2">
+                  <Palette size={20} />
+                  Timeline Messages
+                </h2>
+                <p className="text-sm text-gray-500 mb-4">
+                  Customize the title and description for each year in the timeline
+                </p>
+                <div className="space-y-4 max-h-96 overflow-y-auto pr-2">
+                  {greetingData.timeline.map((event, index) => (
+                    <div key={event.year} className="p-4 bg-gray-50 rounded-xl">
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="text-lg font-bold text-elegant-gold">{event.year}</span>
+                      </div>
+                      <div className="space-y-3">
+                        <div>
+                          <label className="block text-xs font-medium text-gray-600 mb-1">
+                            Title
+                          </label>
+                          <input
+                            type="text"
+                            value={event.title}
+                            onChange={(e) => handleTimelineChange(index, 'title', e.target.value)}
+                            placeholder="Event title"
+                            className="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 focus:border-elegant-gold focus:ring-2 focus:ring-elegant-gold/20 outline-none transition-all"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-gray-600 mb-1">
+                            Description
+                          </label>
+                          <input
+                            type="text"
+                            value={event.description}
+                            onChange={(e) => handleTimelineChange(index, 'description', e.target.value)}
+                            placeholder="Event description"
+                            className="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 focus:border-elegant-gold focus:ring-2 focus:ring-elegant-gold/20 outline-none transition-all"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </Card>
 

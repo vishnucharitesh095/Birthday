@@ -14,6 +14,12 @@ import Confetti from '../components/celebration/Confetti';
 import Fireworks from '../components/celebration/Fireworks';
 import PhotoGrid from '../components/gallery/PhotoGrid';
 
+interface TimelineEvent {
+  year: string;
+  title: string;
+  description: string;
+}
+
 interface GreetingData {
   birthdayName: string;
   message: string;
@@ -22,6 +28,7 @@ interface GreetingData {
   backgroundImage: string;
   music: string;
   theme: string;
+  timeline: TimelineEvent[];
 }
 
 // Demo data for when no data is stored
@@ -39,15 +46,16 @@ const demoData: GreetingData = {
   backgroundImage: 'https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=1200',
   music: '',
   theme: 'karthika',
+  timeline: [
+    { year: '2020', title: 'The Beginning', description: 'Where it all started' },
+    { year: '2021', title: 'New Adventures', description: 'New journeys begin' },
+    { year: '2022', title: 'Growing Stronger', description: 'Every day better than before' },
+    { year: '2023', title: 'Making Memories', description: 'Cherishing every moment' },
+    { year: '2024', title: 'New Horizons', description: 'Looking forward to tomorrow' },
+    { year: '2025', title: 'New Beginnings', description: 'A fresh start awaits' },
+    { year: '2026', title: 'Dreams Come True', description: 'Making wishes happen' },
+  ],
 };
-
-const timelineEvents = [
-  { year: '2020', title: 'The Beginning', description: 'Where it all started' },
-  { year: '2021', title: 'New Adventures', description: 'New journeys begin' },
-  { year: '2022', title: 'Growing Stronger', description: 'Every day better than before' },
-  { year: '2023', title: 'Making Memories', description: 'Cherishing every moment' },
-  { year: '2024', title: 'New Horizons', description: 'Looking forward to tomorrow' },
-];
 
 const GreetingPage: React.FC = () => {
   const { id } = useParams();
@@ -318,7 +326,7 @@ const GreetingPage: React.FC = () => {
             {/* Timeline line */}
             <div className="absolute left-1/2 -translate-x-1/2 w-1 h-full bg-gradient-to-b from-elegant-gold to-pink-400 rounded-full" />
             
-            {timelineEvents.map((event, index) => (
+            {(greeting.timeline || []).map((event, index) => (
               <motion.div
                 key={index}
                 initial={{ opacity: 0, x: index % 2 === 0 ? -50 : 50 }}
